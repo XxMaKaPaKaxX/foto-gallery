@@ -43,4 +43,16 @@
 .featured-dog__description {
     flex: 1;
     padding: 0 $main-spacing;
+
+    .featured-dog__description__refresh {
+        color: blue;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: .2s;
+
+        &:hover {
+            color: darken(blue, $amount: 30%);
+            font-weight: 700;
+        }
+    }
 }

@@ -1,7 +1,5 @@
 import '../sass/style.scss';
 
-
-
 class DogBreeds {
   constructor() {
     this.apiUrl = 'https://dog.ceo/api';
@@ -9,8 +7,17 @@ class DogBreeds {
     this.backgroundEl = document.querySelector('.featured-dog__background');
     this.tilesEl = document.querySelector('.tiles');
     this.spiner = document.querySelector('.spinner');
+    this.description = document.querySelector('.featured-dog__description__content');
 
     this.init();
+  }
+
+  scrollUp = () => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
   }
 
   showLoading = () => {
@@ -21,11 +28,34 @@ class DogBreeds {
     this.spiner.classList.remove('spiner--visible');
   }
 
+  showImageWhenReady= (image) => {
+    this.imgEl.setAttribute('src', image);
+    this.backgroundEl.style.background = `url('${image}')`;
+    this.hideLoading();   
+  }
+
+  showDescription = (name,type) => {
+    this.description.textContent = `Here you can see ${name}`;
+
+    const pRefresh = document.createElement('p');
+    pRefresh.textContent = 'see more photos';
+    pRefresh.classList.add('featured-dog__description__refresh');
+
+    this.actualDogBreed = type;
+    
+    pRefresh.addEventListener('click', () => {
+      this.showLoading;
+      this.getRandomImageByBreed(this.actualDogBreed)
+        .then((src) => this.showImageWhenReady(src));
+    })
+
+
+    this.description.append(pRefresh);
+  }
+
   addBreed = (breed, subBreed) => {
     let name;
     let type;
-    console.log(subBreed)
-    console.log(subBreed === undefined)
     if (subBreed === undefined) {
       name = breed;
       type = breed;
@@ -41,13 +71,11 @@ class DogBreeds {
 
     newDivContent.textContent = name;
     newDivContent.addEventListener('click', () => {
+      this.scrollUp();
       this.showLoading
       this.getRandomImageByBreed(type)
-        .then((src) => {
-          this.imgEl.setAttribute('src', src);
-          this.backgroundEl.style.background = `url('${src}')`;
-          this.hideLoading();
-        })
+        .then((src) => this.showImageWhenReady(src));
+      this.showDescription(name,type);
     })
 
     newTile.append(newDivContent);
@@ -84,15 +112,7 @@ class DogBreeds {
   init = () => {
     this.showLoading();
     this.getRandomImage()
-      .then(src => {
-        console.log(src);
-        this.imgEl.setAttribute('src', src);
-        this.backgroundEl.style.background = `url('${src}')`;
-        this.hideLoading();
-      })
-    this.getListBreeds()
-      .then(list => console.log(list));
-
+    .then((src) => this.showImageWhenReady(src));
     this.showAllBreeds()
   }
 }
