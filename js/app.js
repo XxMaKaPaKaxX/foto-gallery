@@ -7,21 +7,69 @@ class DogBreeds {
     this.apiUrl = 'https://dog.ceo/api';
     this.imgEl = document.querySelector('.featured-dog img');
     this.backgroundEl = document.querySelector('.featured-dog__background');
+    this.tilesEl = document.querySelector('.tiles');
 
     this.init();
   }
 
+  addBreed = (breed, subBreed) => {
+    let name;
+    let type;
+    console.log(subBreed)
+    console.log(subBreed === undefined)
+    if (subBreed === undefined) {
+      name = breed;
+      type = breed;
+    } else {
+      name = `${breed} ${subBreed}`;
+      type = `${breed}/${subBreed}`;
+    }
+    const newTile = document.createElement('div');
+    newTile.classList.add('tiles__tile');
+
+    const newDivContent = document.createElement('div');
+    newDivContent.classList.add('tiles__tile__content');
+
+    newDivContent.textContent = name;
+    newDivContent.addEventListener('click', () => {
+      this.getRandomImageByBreed(type)
+        .then((src) => {
+          this.imgEl.setAttribute('src', src);
+          this.backgroundEl.style.background = `url('${src}')`;
+        })
+    })
+
+    newTile.append(newDivContent);
+    this.tilesEl.append(newTile);
+    
+  }
+
   getListBreeds = () => fetch(`${this.apiUrl}/breeds/list/all`)
-  .then((resp) => resp.json())
-  .then((data) => data.message);
+    .then((resp) => resp.json())
+    .then((data) => data.message);
 
   getRandomImage = () => fetch(`${this.apiUrl}/breeds/image/random`)
-  .then((resp) => resp.json())
-  .then((data) => data.message);
+    .then((resp) => resp.json())
+    .then((data) => data.message);
 
- getRandomImageByBreed = (breed) => fetch(`${this.apiUrl}/breed/${breed}/images/random`)
-  .then((resp) => resp.json())
-  .then((data) => data.message);
+  getRandomImageByBreed = (breed) => fetch(`${this.apiUrl}/breed/${breed}/images/random`)
+    .then((resp) => resp.json())
+    .then((data) => data.message);
+
+  showAllBreeds = () => {
+    this.getListBreeds()
+      .then((breeds) => {
+        for(const breed in breeds) {
+          if(breeds[breed].length === 0) {
+            this.addBreed(breed)
+          } else {
+            for (const subBreed of breeds[breed]) {
+              this.addBreed(breed, subBreed)
+            }
+          }
+        }
+      })
+  }
 
   init = () => {
     this.getRandomImage()
@@ -31,7 +79,9 @@ class DogBreeds {
         this.backgroundEl.style.background = `url('${src}')`
       })
     this.getListBreeds()
-      .then(list => console.log(list))
+      .then(list => console.log(list));
+
+    this.showAllBreeds()
   }
 }
 
