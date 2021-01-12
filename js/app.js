@@ -8,8 +8,17 @@ class DogBreeds {
     this.imgEl = document.querySelector('.featured-dog img');
     this.backgroundEl = document.querySelector('.featured-dog__background');
     this.tilesEl = document.querySelector('.tiles');
+    this.spiner = document.querySelector('.spinner');
 
     this.init();
+  }
+
+  showLoading = () => {
+    this.spiner.classList.add('spiner--visible');
+  }
+
+  hideLoading = () => {
+    this.spiner.classList.remove('spiner--visible');
   }
 
   addBreed = (breed, subBreed) => {
@@ -32,16 +41,17 @@ class DogBreeds {
 
     newDivContent.textContent = name;
     newDivContent.addEventListener('click', () => {
+      this.showLoading
       this.getRandomImageByBreed(type)
         .then((src) => {
           this.imgEl.setAttribute('src', src);
           this.backgroundEl.style.background = `url('${src}')`;
+          this.hideLoading();
         })
     })
 
     newTile.append(newDivContent);
-    this.tilesEl.append(newTile);
-    
+    this.tilesEl.append(newTile);    
   }
 
   getListBreeds = () => fetch(`${this.apiUrl}/breeds/list/all`)
@@ -72,11 +82,13 @@ class DogBreeds {
   }
 
   init = () => {
+    this.showLoading();
     this.getRandomImage()
       .then(src => {
         console.log(src);
         this.imgEl.setAttribute('src', src);
-        this.backgroundEl.style.background = `url('${src}')`
+        this.backgroundEl.style.background = `url('${src}')`;
+        this.hideLoading();
       })
     this.getListBreeds()
       .then(list => console.log(list));
