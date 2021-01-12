@@ -1,4 +1,11 @@
 {
-  "presets": ["@babel/preset-env"],
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "usage"
+      }
+    ]
+  ],
   "plugins": ["transform-class-properties", "transform-es2015-arrow-functions"]
 }
